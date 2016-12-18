@@ -178,7 +178,12 @@ vorpal.command('/login <token>')
   .action(function (args, cb) {
     vorpal.localStorage.setItem('token', args.token);
     vorpal.log(chalk.bold('Token saved, use /logout to log out, or /exit to exit'));
-    client.login(args.token).then(() => cb());
+    client.login(args.token).then(() => cb()).catch(() => {
+      vorpal.localStorage.removeItem('token');
+      vorpal.log(chalk.bold('INVALID TOKEN!'))
+      client.destroy();
+      process.exit();
+    });
   });
 
 vorpal.command('/logout')
@@ -224,5 +229,10 @@ if (!token) {
   vorpal.delimiter('>').show();
   vorpal.log(chalk.bold('You are not logged in, please use the login command!'));
 } else {
-  client.login(token);
+  client.login(token).catch(() => {
+    vorpal.localStorage.removeItem('token');
+    vorpal.log(chalk.bold('INVALID TOKEN!'))
+    client.destroy();
+    process.exit();
+  });
 }
