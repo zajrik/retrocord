@@ -1,5 +1,14 @@
 #!/usr/bin/env node
 
+const logo = `______ _____ ___________ _____ _____ _________________
+| ___ \\  ___|_   _| ___ \\  _  /  __ \\  _  | ___ \\  _  \\
+| |_/ / |__   | | | |_/ / | | | /  \\/ | | | |_/ / | | |
+|    /|  __|  | | |    /| | | | |   | | | |    /| | | |
+| |\\ \\| |___  | | | |\\ \\ \\_/ / \__/\\ \\_/ / |\\ \\| |/ /
+\\_| \\_\\____/  \\_/ \\_| \\_|\\___/ \\____/\\___/\\_| \\_|___/
+                   The best in life
+`;
+
 const fs = require('fs');
 const path = require('path');
 const Discord = require('discord.js');
@@ -180,7 +189,7 @@ vorpal.command('/login <token>')
     vorpal.log(chalk.bold('Token saved, use /logout to log out, or /exit to exit'));
     client.login(args.token).then(() => cb()).catch(() => {
       vorpal.localStorage.removeItem('token');
-      vorpal.log(chalk.bold('INVALID TOKEN!'))
+      vorpal.log(chalk.bold('INVALID TOKEN!'));
       client.destroy();
       process.exit();
     });
@@ -217,7 +226,7 @@ client.on('message', message => {
 
 client.once('ready', () => {
   spinner.stop();
-  console.log(center(fs.readFileSync(path.resolve('./assets/banner.txt'), 'utf8')));
+  console.log(center(logo));
   console.log(center(`Connected as ${client.user.username}#${client.user.discriminator}`));
   vorpal.delimiter('>').show();
 });
@@ -231,7 +240,7 @@ if (!token) {
 } else {
   client.login(token).catch(() => {
     vorpal.localStorage.removeItem('token');
-    vorpal.log(chalk.bold('INVALID TOKEN!'))
+    vorpal.log(chalk.bold('INVALID TOKEN!'));
     client.destroy();
     process.exit();
   });
