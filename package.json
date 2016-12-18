@@ -8,7 +8,6 @@
   },
   "dependencies": {
     "ansi-256-colors": "^1.1.0",
-    "colors": "^1.1.2",
     "discord.js": "github:hydrabolt/discord.js#indev",
     "erlpack": "github:hammerandchisel/erlpack",
     "inquirer": "^2.0.0",
@@ -27,5 +26,4 @@
     "url": "https://github.com/GusCaplan/retrocord/issues"
   },
   "homepage": "https://github.com/GusCaplan/retrocord#readme",
-  "description": ""
 }
