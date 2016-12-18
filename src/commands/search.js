@@ -2,21 +2,24 @@ const Discord = require('discord.js');
 const superagent = require('superagent');
 
 module.exports = (vorpal) => {
-  const { chalk, discord, current, timestamp } = vorpal;
+  const { chalk, discord, timestamp } = vorpal;
   vorpal.command('/search <query...>', 'find messages in the channel')
     .option('--guild')
     .option('--show <number>')
     .action((args, cb) => {
       if (vorpal.current.channel) {
         const start = Date.now();
-        const scope = args.options.guild ? 'guild' : 'channel';
-        const url = `https://discordapp.com/api/${scope}s/${current[scope]}/messages/search?context_size=0&content=${args.query.join(' ')}`;
+        const url = `https://discordapp.com/api/guilds/${vorpal.current.guild}/messages/search?content=${args.query.join(' ')}${args.options.guild ? '' : `&channel_id=${vorpal.current.channel}`}`;
+        console.log(url);
         superagent.get(url).set('Authorization', discord.token).end((err, res) => {
           if (res.body.total_results === 0 || err || res.body.code) {
-            vorpal.log(chalk.bold('Error: no results found!'));
+            vorpal.log(chalk.bold('Error: no results found!', res.body.code || err.message));
             return cb();
           } else {
-            let results = res.body.messages.map(x => new Discord.Message(discord.channels.get(x[0].channel_id), x[0], discord));
+            let results = res.body.messages.map(x => {
+              const m = x.find(z => z.hit);
+              return new Discord.Message(discord.channels.get(m.channel_id), m, discord);
+            });
             const occurances = {};
             for (const m of results) {
               if (!occurances[m.author.id]) occurances[m.author.id] = 0;
