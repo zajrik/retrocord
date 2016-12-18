@@ -10,7 +10,6 @@ module.exports = (vorpal) => {
       if (vorpal.current.channel) {
         const start = Date.now();
         const url = `https://discordapp.com/api/guilds/${vorpal.current.guild}/messages/search?content=${args.query.join(' ')}${args.options.guild ? '' : `&channel_id=${vorpal.current.channel}`}`;
-        console.log(url);
         superagent.get(url).set('Authorization', discord.token).end((err, res) => {
           if (res.body.total_results === 0 || err || res.body.code) {
             vorpal.log(chalk.bold('Error: no results found!', res.body.code || err.message));
