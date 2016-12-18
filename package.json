@@ -11,8 +11,8 @@
     "colors": "^1.1.2",
     "discord.js": "github:hydrabolt/discord.js#indev",
     "erlpack": "github:hammerandchisel/erlpack",
-    "inquirer": "^1.2.3",
-    "ora": "^0.3.0",
+    "inquirer": "^2.0.0",
+    "ora": "^0.4.0",
     "vorpal": "^1.11.4"
   },
   "devDependencies": {},
