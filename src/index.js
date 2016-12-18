@@ -221,8 +221,8 @@ vorpal.localStorage('retrocord');
 let token = vorpal.localStorage.getItem('token');
 if (!token) {
   spinner.stop();
-  vorpal.delimiter('TOKEN>').show();
-  vorpal.log(chalk.bold('You are not logged in!'));
+  vorpal.delimiter('>').show();
+  vorpal.log(chalk.bold('You are not logged in, please use the login command!'));
 } else {
   client.login(token);
 }
