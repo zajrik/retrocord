@@ -1,8 +1,7 @@
-# RETROCORD #
+# RETROCORD
+*__The best in life.__*
 
 `npm i -g retrocord`
-
-An amazing tool.
 
 ![](https://s.gus.host/retrocord.png)
 
