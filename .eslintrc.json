@@ -15,7 +15,7 @@
       "requireReturn": false,
       "requireReturnDescription": false,
       "prefer": {
-        "return": "returns",
+        "return": "return",
         "arg": "param"
       },
       "preferType": {
@@ -89,7 +89,6 @@
     "key-spacing": "error",
     "keyword-spacing": "error",
     "max-depth": "error",
-    "max-len": ["error", 120, 2],
     "max-nested-callbacks": ["error", { "max": 4 }],
     "max-statements-per-line": ["error", { "max": 2 }],
     "new-cap": "error",
@@ -132,6 +131,7 @@
     "prefer-template": "error",
     "rest-spread-spacing": "error",
     "template-curly-spacing": "error",
-    "yield-star-spacing": "error"
+    "yield-star-spacing": "error",
+    "no-console": "off"
   }
 }

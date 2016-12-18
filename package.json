@@ -1,6 +1,6 @@
 {
   "name": "retrocord",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "The best in life",
   "main": "src/index.js",
   "bin": {
