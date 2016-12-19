@@ -1,6 +1,15 @@
 module.exports = (vorpal) => {
   const { chalk, discord, logMessage } = vorpal;
   vorpal.command('/join <guild#channel...>', 'join a channel')
+    .autocomplete((text) => {
+      const x = discord.guilds.map(g => g.name.toLowerCase());
+      if (text.startsWith('dm')) {
+        x.push(...discord.channels.filter(c => c.type === 'dm' || c.type === 'group').map(c => `#${c.name.toLowerCase()}`));
+      } else {
+        x.push(...discord.channels.filter(c => c.type === 'text').map(c => `#${c.name.toLowerCase()}`));
+      }
+      return x;
+    })
     .action((args, cb) => {
       args = args['guild#channel'].join(' ');
       if (!args.includes('#')) return cb(chalk.bold('INVALID!'));
