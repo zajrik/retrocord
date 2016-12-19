@@ -6,7 +6,8 @@ module.exports = (vorpal) => {
       if (!args.includes('#')) return cb(chalk.bold('INVALID!'));
       let [guild, channel] = [args.split('#')[0].trim(), args.split('#')[1].trim()];
       if (guild !== 'dm') {
-        guild = discord.guilds.find(g => g.name.toLowerCase() === guild.toLowerCase());
+        guild = discord.guilds.get(vorpal.current.guild) ||
+          discord.guilds.find(g => g.name.toLowerCase() === guild.toLowerCase());
         if (!guild) {
           vorpal.log(chalk.bold('Error: not a valid guild'));
           return cb();
