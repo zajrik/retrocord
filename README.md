@@ -14,3 +14,5 @@
 Cool commands:
 
 __/search__ - master discord's new search endpoint before they do!
+
+__/shrug__ - just like the command in the official client, but cooler because it's in monospace!
