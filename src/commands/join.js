@@ -4,7 +4,7 @@ module.exports = (vorpal) => {
     .autocomplete((text) => {
       const x = discord.guilds.map(g => g.name.toLowerCase());
       if (text.startsWith('dm')) {
-        x.push(...discord.channels.filter(c => c.type === 'dm' || c.type === 'group').map(c => `#${c.name.toLowerCase()}`));
+        x.push(...discord.channels.filter(c => c.type === 'dm' || c.type === 'group').map(c => `#${c.recipient.username.toLowerCase()}`));
       } else {
         x.push(...discord.channels.filter(c => c.type === 'text').map(c => `#${c.name.toLowerCase()}`));
       }
@@ -12,8 +12,7 @@ module.exports = (vorpal) => {
     })
     .action((args, cb) => {
       args = args['guild#channel'].join(' ');
-      if (!args.includes('#')) return cb(chalk.bold('INVALID!'));
-      let [guild, channel] = [args.split('#')[0].trim(), args.split('#')[1].trim()];
+      let [guild, channel] = [args.split('#')[0].trim(), args.split('#')[1]];
       if (guild !== 'dm') {
         guild = guild ? discord.guilds.find(g => g.name.toLowerCase() === guild.toLowerCase()) :
           discord.guilds.get(vorpal.current.guild);
@@ -21,7 +20,7 @@ module.exports = (vorpal) => {
           vorpal.log(chalk.bold('Error: not a valid guild'));
           return cb();
         }
-        channel = guild.channels.filter(c => c.type !== 'voice').find(c => c.name.toLowerCase() === channel.toLowerCase());
+        channel = channel ? guild.channels.filter(c => c.type !== 'voice').find(c => c.name.toLowerCase() === channel.toLowerCase().trim()) : guild.defaultCHannel;
         if (!channel) {
           vorpal.log(chalk.bold('Error: not a valid channel'));
           return cb();
@@ -29,7 +28,8 @@ module.exports = (vorpal) => {
         vorpal.log(chalk.bold(`Joining ${channel.name} in ${guild.name}`));
         vorpal.current = { channel: channel.id, guild: guild.id };
       } else {
-        channel = discord.channels.filter(c => c.type === 'dm').find(c => c.recipient.username.toLowerCase() === channel.toLowerCase());
+        if (!args.includes('#')) return cb(chalk.bold('INVALID!'));
+        channel = discord.channels.filter(c => c.type === 'dm').find(c => c.recipient.username.toLowerCase() === channel.toLowerCase().trim());
         if (!channel) {
           vorpal.log(chalk.bold('Error: not a valid channel'));
           return cb();
