@@ -108,10 +108,12 @@ vorpal.command('/logout')
     return cb();
   });
 
-vorpal.command('/shrug')
+vorpal.command('/shrug [words...]')
   .action((args, cb) => {
     if (vorpal.current.channel) {
-      client.channels.get(vorpal.current.channel).sendMessage('¯\\_(ツ)_/¯');
+      client.channels.get(vorpal.current.channel).sendMessage(
+        `${args.words ? args.words.map(w => w.toString()).join(' ') : ''} ¯\\_(ツ)_/¯`
+      );
       return cb();
     } else {
       return cb();
