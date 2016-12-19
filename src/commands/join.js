@@ -4,7 +4,7 @@ module.exports = (vorpal) => {
     .autocomplete((text) => {
       const x = discord.guilds.map(g => g.name.toLowerCase());
       if (text.startsWith('dm')) {
-        x.push(...discord.channels.filter(c => c.type === 'dm' || c.type === 'group').map(c => `#${c.recipient.username.toLowerCase()}`));
+        x.push(...discord.channels.filter(c => c.type === 'dm' || c.type === 'group').map(c => `#${(c.name ? c.name : c.recipient.username).toLowerCase()}`));
       } else {
         x.push(...discord.channels.filter(c => c.type === 'text').map(c => `#${c.name.toLowerCase()}`));
       }
