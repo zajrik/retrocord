@@ -48,7 +48,7 @@ const logMessage = vorpal.logMessage = (message) => {
     };
   }
 
-  for (const match of content.match(/:.+?:/g) || []) content = content.replace(match, emoji.get(match));
+  for (const match of content.match(/:[^:]+:/g) || []) content = content.replace(match, emoji.get(match));
 
   if (message.type !== 'DEFAULT') {
     switch (message.type) {
@@ -125,7 +125,10 @@ vorpal.command('/shrug [words...]')
   });
 
 vorpal.catch('[words...]', 'send a message')
-  .autocomplete(Object.keys(emoji.emoji).map(x => `:${x}:`))
+  .autocomplete([
+    ...vorpal.current.guild ? client.guilds.get(vorpal.current.guild).emojis.map(x => `:${x.name}:`) : [],
+    ...Object.keys(emoji.emoji).map(x => `:${x}:`),
+  ])
   .action((args, cb) => {
     if (vorpal.current.channel) {
       args.words = args.words.map(w => w.toString());
@@ -135,9 +138,17 @@ vorpal.catch('[words...]', 'send a message')
           if (user) args.words[word] = user.toString();
         }
       }
+
       let words = args.words.join(' ');
-      for (const match of words.match(/:.+?:/g) || []) words = words.replace(match, emoji.get(match));
-      client.channels.get(vorpal.current.channel).sendMessage(args.words.join(' '));
+      for (const match of words.match(/:[^:]+:/g) || []) {
+        let found;
+        if (vorpal.current.guild) {
+          found = client.guilds.get(vorpal.current.guild).emojis.find(x => x.name.toLowerCase() === match.replace(/:/g, '').toLowerCase());
+        }
+        words = words.replace(match, found ? found.toString() : null || emoji.get(match));
+      }
+
+      client.channels.get(vorpal.current.channel).sendMessage(words);
     } else {
       vorpal.log(chalk.bold('Error: you must join a channel before you can send messages!'));
     }
