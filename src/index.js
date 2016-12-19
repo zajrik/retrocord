@@ -85,6 +85,8 @@ for (const command of [
   'join',
   'nick',
   'search',
+  'shrug',
+  'catcher',
 ]) require(`./commands/${command}`)(vorpal);
 
 vorpal.command('/exit', 'exit').action(() => {
@@ -112,49 +114,6 @@ vorpal.command('/logout')
     return cb();
   });
 
-vorpal.command('/shrug [words...]')
-  .action((args, cb) => {
-    if (vorpal.current.channel) {
-      client.channels.get(vorpal.current.channel).sendMessage(
-        `${args.words ? args.words.map(w => w.toString()).join(' ') : ''} ¯\\_(ツ)_/¯`
-      );
-      return cb();
-    } else {
-      return cb();
-    }
-  });
-
-vorpal.catch('[words...]', 'send a message')
-  .autocomplete([
-    ...vorpal.current.guild ? client.guilds.get(vorpal.current.guild).emojis.map(x => `:${x.name}:`) : [],
-    ...Object.keys(emoji.emoji).map(x => `:${x}:`),
-  ])
-  .action((args, cb) => {
-    if (vorpal.current.channel) {
-      args.words = args.words.map(w => w.toString());
-      for (let word in args.words) {
-        if (args.words[word].startsWith('@')) {
-          let user = client.users.find(x => x.username.toLowerCase() === args.words[word].replace('@', '').toLowerCase());
-          if (user) args.words[word] = user.toString();
-        }
-      }
-
-      let words = args.words.join(' ');
-      for (const match of words.match(/:[^:]+:/g) || []) {
-        let found;
-        if (vorpal.current.guild) {
-          found = client.guilds.get(vorpal.current.guild).emojis.find(x => x.name.toLowerCase() === match.replace(/:/g, '').toLowerCase());
-        }
-        words = words.replace(match, found ? found.toString() : null || emoji.get(match));
-      }
-
-      client.channels.get(vorpal.current.channel).sendMessage(words);
-    } else {
-      vorpal.log(chalk.bold('Error: you must join a channel before you can send messages!'));
-    }
-    cb();
-  });
-
 client.on('message', message => {
   if (message.channel.id !== vorpal.current.channel) return;
   logMessage(message);
@@ -174,6 +133,7 @@ client.once('ready', () => {
 });
 
 vorpal.localStorage('retrocord');
+vorpal.history('retrocord');
 let token = vorpal.localStorage.getItem('token');
 if (!token) {
   spinner.stop();
