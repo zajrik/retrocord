@@ -16,6 +16,7 @@ const center = require('./util/center');
 const hexToRgb = require('./util/hexToRgb');
 const chalk = vorpal.chalk;
 const colors = require('ansi-256-colors');
+const emoji = require('node-emoji');
 
 const timestamp = vorpal.timestamp = (d = new Date(), mdy = false) =>
   `${mdy ? `${d.getFullYear().toString().padStart(2, '0')}-${d.getMonth().toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')} ` : ''}
@@ -37,6 +38,7 @@ const logMessage = vorpal.logMessage = (message) => {
       content = content.replace(new RegExp(`<@!?${mention.id}>`, 'g'), `@${mention.username}`);
     }
   }
+
   if (message.member) {
     color = (...x) => {
       const role = message.member.roles.filter(r => r.color !== 0).last();
@@ -45,6 +47,8 @@ const logMessage = vorpal.logMessage = (message) => {
       return colors.fg.getRgb(c.r, c.g, c.b) + x.join(' ') + colors.reset;
     };
   }
+
+  for (const match of content.match(/:.+?:/g) || []) content = content.replace(match, emoji.get(match));
 
   if (message.type !== 'DEFAULT') {
     switch (message.type) {
@@ -121,6 +125,7 @@ vorpal.command('/shrug [words...]')
   });
 
 vorpal.catch('[words...]', 'send a message')
+  .autocomplete(Object.keys(emoji.emoji).map(x => `:${x}:`))
   .action((args, cb) => {
     if (vorpal.current.channel) {
       args.words = args.words.map(w => w.toString());
@@ -130,6 +135,8 @@ vorpal.catch('[words...]', 'send a message')
           if (user) args.words[word] = user.toString();
         }
       }
+      let words = args.words.join(' ');
+      for (const match of words.match(/:.+?:/g) || []) words = words.replace(match, emoji.get(match));
       client.channels.get(vorpal.current.channel).sendMessage(args.words.join(' '));
     } else {
       vorpal.log(chalk.bold('Error: you must join a channel before you can send messages!'));
@@ -144,6 +151,12 @@ client.on('message', message => {
 
 client.once('ready', () => {
   spinner.stop();
+  if (client.user.bot) {
+    vorpal.log(chalk.yellow.bold('NO BOTS'));
+    vorpal.localStorage.removeItem('token');
+    client.destroy();
+    process.exit();
+  }
   console.log(center(logo));
   console.log(center(`Connected as ${client.user.username}#${client.user.discriminator}`));
   vorpal.delimiter('>').show();
